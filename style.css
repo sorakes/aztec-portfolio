@@ -1,0 +1,402 @@
+/* =========================================
+   AZTEC DJ PORTFOLIO - CONTINUOUS SCROLL
+   ========================================= */
+
+:root {
+    --bg-color: #050005;
+    --neon-cyan: #ff003c;
+    /* Replaced with Neon Crimson */
+    --cyber-purple: #ff4500;
+    /* Replaced with Deep Orange */
+    --neon-pink: #cc0000;
+    /* Replaced with Dark Red */
+    --text-color: #e0e0e0;
+    --font-main: 'Montserrat', sans-serif;
+    --font-heading: 'Orbitron', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body,
+html {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-dark);
+    color: #fff;
+    font-family: var(--font-body);
+    overflow: hidden;
+    /* JavaScript manages continuous scroll */
+}
+
+/* Background Canvas */
+#starfield {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Fixed Header for Title */
+.sticky-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    pointer-events: none;
+    /* Let clicks pass through */
+    transform-origin: center center;
+    will-change: transform;
+}
+
+/* Independent Scroll Prompt Container */
+.scroll-prompt-container {
+    position: fixed;
+    bottom: 8vh;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 15;
+    pointer-events: none;
+    will-change: opacity, transform;
+}
+
+/* Scrolling Content Wrapper */
+.scrolling-content {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
+
+/* Spacer for Hero */
+.hero-spacer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    /* Changed by JS */
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 8vh;
+    will-change: transform, opacity;
+}
+
+/* Sections General */
+.scrolling-content section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 10vh 5%;
+    display: flex;
+    /* Changed by JS */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    will-change: transform, opacity;
+}
+
+.section-title {
+    font-family: var(--font-heading);
+    color: var(--neon-cyan);
+    font-size: 1.8rem;
+    letter-spacing: 3px;
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px rgba(255, 0, 60, 0.4);
+    text-transform: uppercase;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Hero Section */
+.hero-content {
+    text-align: center;
+}
+
+.brand-logo {
+    width: 350px;
+    height: auto;
+    margin-bottom: 20px;
+    filter: invert(24%) sepia(85%) saturate(7000%) hue-rotate(345deg) drop-shadow(0 0 15px rgba(255, 0, 60, 0.8));
+    z-index: 25;
+}
+
+/* Retain glitch animation applicability but adjust for image */
+.glitch {
+    position: relative;
+    will-change: transform;
+}
+
+/* Removed Text-Only Neon Outline - Now handled by logo filter */
+
+.subtitle {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: var(--neon-purple);
+    letter-spacing: 6px;
+    opacity: 0.9;
+    text-shadow: 0 0 10px var(--neon-purple);
+}
+
+.scroll-prompt {
+    margin-top: 100px;
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    color: #aaa;
+    letter-spacing: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    opacity: 0.7;
+}
+
+.blink {
+    animation: blinker 2s linear infinite;
+    color: var(--neon-cyan);
+    font-size: 1.5rem;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+/* Info Section (About) */
+.about-section {
+    position: relative;
+}
+
+.dj-portrait-overlay {
+    position: absolute;
+    top: -5%;
+    left: 0px;
+    width: 100%;
+    height: 160%;
+    background-image: url(assets/dj_photo.jpg);
+    background-size: cover;
+    background-position: center 20%;
+    opacity: 0.12;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: -1;
+    -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 1) 30%, rgba(0, 0, 0, 0) 80%);
+    mask-image: radial-gradient(circle, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 86%);
+}
+
+
+.lowpoly-panel {
+    background: rgba(10, 15, 25, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    padding: 40px;
+    position: relative;
+    max-width: 700px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    clip-path: polygon(0 20px, 20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+}
+
+.hud-line {
+    position: absolute;
+    top: 5px;
+    left: 25px;
+    width: 50px;
+    height: 2px;
+    background: var(--neon-cyan);
+    box-shadow: 0 0 5px var(--neon-cyan);
+}
+
+.hud-line.bottom {
+    top: auto;
+    bottom: 5px;
+    left: auto;
+    right: 25px;
+}
+
+.cyber-text {
+    line-height: 1.8;
+    color: #ccc;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+/* Music Section */
+.spotify-wrapper {
+    width: 100%;
+    min-width: 300px;
+    max-width: 800px;
+    background: #000;
+}
+
+.lowpoly-border {
+    padding: 3px;
+    background: linear-gradient(135deg, var(--neon-purple) 0%, #111 50%, var(--neon-cyan) 100%);
+    clip-path: polygon(0 20px, 20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+}
+
+.lowpoly-border iframe {
+    display: block;
+    clip-path: polygon(0 18px, 18px 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
+}
+
+
+/* Fixed Taskbar */
+.taskbar {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+    background: rgba(10, 0, 5, 0.25);
+    /* More transparent dark red bg */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 0, 60, 0.4);
+    z-index: 100;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(255, 0, 60, 0.2);
+}
+
+.task-btn {
+    color: rgba(255, 255, 255, 0.6);
+    /* Neutral gray default */
+    font-size: 1.3rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    /* Neutral background */
+    text-shadow: none;
+    /* No glow by default */
+    transition: all 0.3s ease;
+}
+
+.task-btn:hover {
+    color: #fff;
+    transform: translateY(-5px);
+    text-shadow: 0 0 12px #fff;
+    /* Generic white glow on hover */
+}
+
+.task-btn.ig:hover {
+    background: rgba(225, 48, 108, 0.2);
+    box-shadow: 0 0 15px #E1306C;
+    color: #E1306C;
+    text-shadow: 0 0 12px #E1306C;
+}
+
+.task-btn.dc:hover {
+    background: rgba(88, 101, 242, 0.2);
+    box-shadow: 0 0 15px #5865F2;
+    color: #5865F2;
+    text-shadow: 0 0 12px #5865F2;
+}
+
+.task-btn.tw:hover {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 15px #fff;
+    color: #fff;
+    text-shadow: 0 0 12px #fff;
+}
+
+.task-btn.dr:hover {
+    background: rgba(15, 157, 88, 0.2);
+    /* Google Drive Green */
+    box-shadow: 0 0 15px #0F9D58;
+    color: #0F9D58;
+    text-shadow: 0 0 12px #0F9D58;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .glitch {
+        font-size: 4rem;
+        letter-spacing: 5px;
+    }
+
+    .subtitle {
+        font-size: 1.2rem;
+        letter-spacing: 4px;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .glitch {
+        font-size: 3rem;
+        letter-spacing: 3px;
+        -webkit-text-stroke: 1px var(--neon-cyan);
+    }
+
+    .subtitle {
+        font-size: 1rem;
+        letter-spacing: 2px;
+    }
+
+    .lowpoly-panel {
+        padding: 25px;
+        width: 100%;
+    }
+
+    .cyber-text {
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .taskbar {
+        bottom: 15px;
+        padding: 10px 15px;
+        gap: 10px;
+    }
+
+    .task-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .glitch {
+        font-size: 2.5rem;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+    }
+}
